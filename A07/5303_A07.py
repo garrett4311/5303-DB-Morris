@@ -4,66 +4,63 @@ import plotly
 import plotly.offline as offline
 import plotly.graph_objs as go
 from plotly.offline import init_notebook_mode, plot, iplot
-#init_notebook_mode(connected=True)
+init_notebook_mode(connected=True)
 
 #import csv file
-train = pd.read_csv('/Users/garrettmorris/Desktop/database_stuff/earthquakes.csv')
+quake = pd.read_csv('/Users/garrettmorris/Desktop/database_stuff/earthquakes.csv')
+airports = pd.read_csv('/Users/garrettmorris/Desktop/database_stuff/airports.csv', error_bad_lines=False)
+ufos = pd.read_csv('/Users/garrettmorris/Desktop/database_stuff/ufo_sightings.csv', error_bad_lines=False)
 
 #get mapbox token
-mapbox_access_token = open("/Users/garrettmorris/Desktop/database_stuff/A07/mapbox_token.txt").read()
+mapbox_access_token = open("/Users/garrettmorris/Desktop/database_stuff/A07/mapbox_token2.txt").read()
 
-shaz13_custom_style = "mapbox://styles/shaz13/cjiog1iqa1vkd2soeu5eocy4i"
-# #set the geo=spatial data
-# data = [go.Scattermapbox(
-#             lat= train['latitude'] ,
-#             lon= train['longitude'],
-#             customdata = train['earthquake_id'],
-#             mode='markers',
-#             marker=dict(
-#                 size= 4,
-#                 color = 'gold',
-#                 opacity = .8,
-#             ),
-#           )]
-# #set the layout to plot
-# layout = go.Layout(autosize=False,
-#                    mapbox= dict(accesstoken="Ypk.eyJ1IjoiZ2FycmV0dDQzMTEiLCJhIjoiY2sxcXhuZDEwMDF4ajNjczBrcDlnbDdubCJ9.ZCAz1yq24OiZ6o9wV2N_pw",
-#                                 bearing=10,
-#                                 pitch=60,
-#                                 zoom=13,
-#                                 center= dict(lat=40.721319,
-#                                              lon=-73.987130),
-#                                 style=shaz13_custom_style),
-#                     width=900,
-#                     height=600, 
-#                     title = "Earthquakes")
+mapbox_style = "mapbox://styles/garrett4311/ck1s78co60uht1crol6lxs6fr"
 
-# fig = dict (data=data, layout=layout)
-latitude=[]
-longitude=[]
-fig = go.Figure(go.Scattermapbox(
-        lat=latitude.append(train['latitude']),
-        lon=longitude.append(train['longitude']),
-        mode='markers',
-        marker=dict(
-          size = 4,
-          color = 'green',
-          opacity = .8
-        )
-    ))
+# #set the geo spatial data
+data = [go.Scattermapbox(
+            lat= quake['latitude'] ,
+            lon= quake['longitude'],
+            customdata = quake['earthquake_id'],
+            mode='markers',
+            marker=dict(
+                size= 4,
+                color = 'orange',
+                opacity = .8,
+            ),
+          )]
+data2 = [go.Scattermapbox(
+            lat= ufos['latitude'] ,
+            lon= ufos['longitude'],
+            customdata = ufos['datetime'],
+            mode='markers',
+            marker=dict(
+                size= 4,
+                color = 'blue',
+                opacity = .8,
+            ),
+          )]
+data3 = [go.Scattermapbox(
+            lat= airports[' latitude'] ,
+            lon= airports[' longitude'],
+            #customdata = airports['airport id'],
+            mode='markers',
+            marker=dict(
+                size= 4,
+                color = 'green',
+                opacity = .8,
+            ),
+          )]
+#set the layout to plot
+layout = go.Layout(autosize=True,
+                   mapbox= dict(accesstoken= mapbox_access_token,
+                        bearing=0,
+                        pitch=0,
+                        zoom=5,
+                        center= dict(lat=0,lon=0),
+                        style=mapbox_style),
+                    width=1500,
+                    height=1080,
+                    title = "Armageddon")
 
-fig.update_layout(
-    autosize=True,
-    hovermode='closest',
-    mapbox=go.layout.Mapbox(
-        accesstoken=mapbox_access_token,
-        bearing = 0,
-        center=go.layout.mapbox.Center(
-            lat=38.92,
-            lon=-77.07
-        ),
-        pitch=0,
-        zoom=10
-    ),
-)
+fig = dict (data=data+data2+data3, layout=layout)
 plotly.offline.plot(fig, image_filename='test')
